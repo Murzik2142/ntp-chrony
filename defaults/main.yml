@@ -1,0 +1,5 @@
+---
+# defaults file for chrony
+ntp_servers: 
+  - "pool.ntp.org"
+timezone: "Europe/Moscow" 

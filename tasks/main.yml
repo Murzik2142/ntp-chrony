@@ -1,0 +1,38 @@
+---
+# tasks file for chrony
+- name: Install package
+  ansible.builtin.package:
+    name: "chrony"
+    state: present
+    
+- name: Удаление всех серверов из конфигурации Chrony
+  lineinfile:
+    path: /etc/chrony/chrony.conf
+    regexp: '^server'
+    state: absent
+    backup: yes
+
+- name: Удаление всех пулов из конфигурации Chrony
+  lineinfile:
+    path: /etc/chrony/chrony.conf
+    regexp: '^pool'
+    state: absent
+    backup: yes
+
+- name: Добавление новых NTP серверов в конфигурацию Chrony
+  lineinfile:
+    path: /etc/chrony/chrony.conf
+    line: "server {{ item }} iburst"
+    state: present
+  with_items: "{{ ntp_servers }}"
+
+- name: Включить и запустить службу Chrony
+  systemd:
+    name: chronyd
+    enabled: yes
+    state: started
+
+- name: Перезапуск службы Chrony
+  systemd:
+    name: chrony
+    state: restarted
